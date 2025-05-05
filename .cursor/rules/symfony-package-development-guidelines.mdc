@@ -1,0 +1,9 @@
+---
+description: General guidelines for developing Symfony packages, including PHP version, conventions, and tooling.
+globs: */src/**/*.*
+alwaysApply: false
+---
+- Use PHP 8.3+ features where appropriate
+- Follow Symfony conventions and best practices
+- Prefer using helpers over facades when possible
+- Focus on creating code that provides excellent developer experience (DX), better autocompletion, type safety, and comprehensive docblocks
