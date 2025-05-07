@@ -1,0 +1,167 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Symfony Entity and Repository Generation Guide
+
+This guide outlines the process of creating database entities and repositories in a Symfony project using Doctrine ORM.
+
+## Prerequisites Check
+
+Before proceeding, verify that:
+1. The project has Doctrine ORM installed (`symfony/orm-pack`).
+2. The project has MakerBundle installed (`symfony/maker-bundle`).
+3. Database connection is configured in `.env` file.
+4. The project follows Symfony best practices for directory structure.
+
+If any prerequisite is not met, stop and request the user to install missing components.
+
+## Step-by-Step Entity Creation Process
+
+### 1. Base Entity Structure
+
+For each entity that needs to be created:
+
+1. Create the entity class in `src/Entity/` directory.
+2. The entity must:
+   - Use appropriate namespace
+   - Include Doctrine ORM annotations/attributes
+   - Extend any required base classes
+   - Implement necessary interfaces
+   - Include standard ID field with auto-increment
+
+### 2. Required Entity Fields
+
+Each entity should include:
+1. `id` (primary key, auto-increment)
+2. `createdAt` (datetime_immutable, automatically set)
+3. `updatedAt` (datetime_immutable, automatically updated)
+4. Any entity-specific fields as requested by the user
+
+### 3. Repository Creation
+
+For each entity:
+1. Create corresponding repository class in `src/Repository/`
+2. Repository must:
+   - Extend `ServiceEntityRepository`
+   - Include constructor with `ManagerRegistry`
+   - Provide basic CRUD methods
+   - Include PHPDoc blocks for type hinting
+
+### 4. Code Style and Standards
+
+All generated code must:
+1. Follow PSR-12 coding standards
+2. Include proper PHPDoc documentation
+3. Use type hints where possible
+4. Follow Symfony coding standards
+5. Use attributes instead of annotations (Symfony 6+)
+
+### 5. Required Methods
+
+Each entity must include:
+1. Getters and setters for all properties
+2. `__toString()` method if applicable
+3. Constructor with reasonable defaults
+4. Timestamp management methods
+
+### 6. Example Format
+
+Use this format for entity classes:
+
+```php
+<?php
+
+namespace App\Entity;
+
+use App\Repository\EntityNameRepository;
+use Doctrine\ORM\Mapping as ORM;
+use DateTimeImmutable;
+
+#[ORM\Entity(repositoryClass: EntityNameRepository::class)]
+#[ORM\HasLifecycleCallbacks]
+class EntityName
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
+    #[ORM\Column]
+    private ?DateTimeImmutable $createdAt = null;
+
+    #[ORM\Column]
+    private ?DateTimeImmutable $updatedAt = null;
+
+    // ... other fields ...
+
+    #[ORM\PrePersist]
+    public function setCreatedAtValue(): void
+    {
+        $this->createdAt = new DateTimeImmutable();
+        $this->updatedAt = new DateTimeImmutable();
+    }
+
+    #[ORM\PreUpdate]
+    public function setUpdatedAtValue(): void
+    {
+        $this->updatedAt = new DateTimeImmutable();
+    }
+}
+```
+
+Use this format for repository classes:
+
+```php
+<?php
+
+namespace App\Repository;
+
+use App\Entity\EntityName;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
+
+/**
+ * @extends ServiceEntityRepository<EntityName>
+ *
+ * @method EntityName|null find($id, $lockMode = null, $lockVersion = null)
+ * @method EntityName|null findOneBy(array $criteria, array $orderBy = null)
+ * @method EntityName[]    findAll()
+ * @method EntityName[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ */
+class EntityNameRepository extends ServiceEntityRepository
+{
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, EntityName::class);
+    }
+}
+```
+
+### 7. Validation Rules
+
+Each entity should include appropriate validation constraints:
+1. Use Symfony's validation attributes
+2. Add constraints for required fields
+3. Include length constraints for string fields
+4. Add any business-specific validation rules
+
+### 8. Relations
+
+When creating relations between entities:
+1. Use appropriate Doctrine relation attributes
+2. Include proper cascade options
+3. Set up bidirectional relations where needed
+4. Add necessary collection initialization in constructors
+
+### 9. Output Requirements
+
+After generating each entity and repository:
+1. Confirm creation of all required files
+2. List any additional steps needed (like migrations)
+3. Provide usage examples for basic CRUD operations
+4. Document any custom repository methods
+
+Follow these instructions precisely when generating entities and repositories. Always maintain consistent coding standards and documentation throughout the generated code.
+
