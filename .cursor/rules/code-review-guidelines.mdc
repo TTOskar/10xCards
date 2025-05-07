@@ -1,0 +1,12 @@
+---
+description: Guidelines for performing code review for Symfony and PHP files.
+globs: 
+alwaysApply: false
+---
+- Prefer string concatenation over heredoc or nowdoc
+- follow SOLID, DRY, KISS, YAGNI principles
+- follow best programming practices
+- use early returns, guard claueses and if-return statements
+- prefer callbacks and loops over recurrency
+
+- don't use references on simple types if possible
