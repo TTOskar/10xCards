@@ -304,4 +304,44 @@
 *Assumptions*:
 - The API adheres to RESTful principles and ensures clarity in payload structures.
 - Both soft-deletion and RLS are applied at the data layer, so the API reflects these behaviors in responses and operations.
-- Admin and user endpoints are clearly separated to ensure secure operation. 
+- Admin and user endpoints are clearly separated to ensure secure operation.
+
+## 5. DTO Layer Recommendations
+
+### A. DTO Structure
+- All DTOs should be immutable (readonly properties)
+- Use PHP 8.0+ constructor property promotion
+- Separate Request and Response DTOs
+- Use validation attributes for request validation
+- Follow naming convention: Create<Entity>DTO, Update<Entity>DTO, etc.
+
+### B. Common Base Classes
+- ApiResponse - standardized wrapper for all API responses
+- PaginationDTO - reusable pagination structure
+- ErrorDTO - standardized error response format
+
+### C. Validation Strategy
+- Use PHP 8 attributes for validation
+- Group validations by context (create/update)
+- Validate at controller level using Symfony Validator
+- Custom constraints for business rules
+
+### D. Mapping Layer
+- DTOMapper service for entity-DTO conversion
+- Use Symfony Serializer for complex mappings
+- Handle nested relationships appropriately
+- Keep mapping logic centralized
+
+### E. OpenAPI/Swagger Integration
+- Add OpenAPI annotations to DTOs
+- Generate API documentation from DTO structure
+- Include validation rules in documentation
+- Document response formats
+
+### F. Form Integration
+- Create FormType classes matching DTO structure
+- Reuse validation rules between API and forms
+- Handle file uploads consistently
+- Support CSRF protection for web forms
+
+*Note: These recommendations ensure consistency across the application while maintaining clean separation between layers.* 

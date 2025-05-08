@@ -419,25 +419,70 @@ For each resource, Web endpoints correspond functionally to the API endpoints, p
    - **URL:** `/admin/kpi`
    - **Description:** Render the KPI dashboard for overall statistics. 
 
-# General directory structure:
+## Core Directory Structure
+```
 src/
 ├── Controller/
-│   ├── Api/          // API controllers
-│   └── Web/          // Web controllers
-├── DTO/              // All DTOs
-│   ├── Request/      // Input DTOs
-│   │   ├── Auth/     
-│   │   ├── Card/
-│   │   ├── Deck/
-│   │   └── ...
-│   └── Response/     // Output DTOs
-│       ├── Auth/
-│       ├── Card/
-│       └── ...
-├── Entity/           // Database entities
-├── Form/             // Form types for web forms
-│   ├── Auth/
-│   ├── Card/
-│   └── ...
-├── Repository/       // Database queries
-└── Service/          // Business logic
+│   ├── Api/          # API controllers
+│   └── Web/          # Web controllers
+├── DTO/              # All DTOs
+│   ├── Request/      # Input DTOs
+│   │   ├── Auth/     # Authentication DTOs
+│   │   ├── Card/     # Card management DTOs
+│   │   ├── Deck/     # Deck management DTOs
+│   │   └── AI/       # AI generation DTOs
+│   └── Response/     # Output DTOs
+│       ├── Auth/     # Auth responses
+│       ├── Card/     # Card responses
+│       ├── Deck/     # Deck responses
+│       └── Common/   # Shared DTOs
+├── Entity/           # Database entities
+├── Form/             # Form types for web forms
+│   ├── Auth/         # Authentication forms
+│   ├── Card/         # Card management forms
+│   └── Deck/         # Deck management forms
+├── Repository/       # Database queries
+└── Service/          # Business logic
+    ├── DTO/          # DTO mapping services
+    └── Validator/    # Custom validation services
+```
+
+## DTO Layer Recommendations
+
+### A. DTO Structure
+- All DTOs should be immutable (readonly properties)
+- Use PHP 8.0+ constructor property promotion
+- Separate Request and Response DTOs
+- Use validation attributes for request validation
+- Follow naming convention: Create<Entity>DTO, Update<Entity>DTO, etc.
+
+### B. Common Base Classes
+- ApiResponse - standardized wrapper for all API responses
+- PaginationDTO - reusable pagination structure
+- ErrorDTO - standardized error response format
+
+### C. Validation Strategy
+- Use PHP 8 attributes for validation
+- Group validations by context (create/update)
+- Validate at controller level using Symfony Validator
+- Custom constraints for business rules
+
+### D. Mapping Layer
+- DTOMapper service for entity-DTO conversion
+- Use Symfony Serializer for complex mappings
+- Handle nested relationships appropriately
+- Keep mapping logic centralized
+
+### E. OpenAPI/Swagger Integration
+- Add OpenAPI annotations to DTOs
+- Generate API documentation from DTO structure
+- Include validation rules in documentation
+- Document response formats
+
+### F. Form Integration
+- Create FormType classes matching DTO structure
+- Reuse validation rules between API and forms
+- Handle file uploads consistently
+- Support CSRF protection for web forms
+
+*Note: These recommendations ensure consistency across the application while maintaining clean separation between layers.* 
