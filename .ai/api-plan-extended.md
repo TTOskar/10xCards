@@ -418,3 +418,26 @@ For each resource, Web endpoints correspond functionally to the API endpoints, p
    - **Method:** GET
    - **URL:** `/admin/kpi`
    - **Description:** Render the KPI dashboard for overall statistics. 
+
+# General directory structure:
+src/
+├── Controller/
+│   ├── Api/          // API controllers
+│   └── Web/          // Web controllers
+├── DTO/              // All DTOs
+│   ├── Request/      // Input DTOs
+│   │   ├── Auth/     
+│   │   ├── Card/
+│   │   ├── Deck/
+│   │   └── ...
+│   └── Response/     // Output DTOs
+│       ├── Auth/
+│       ├── Card/
+│       └── ...
+├── Entity/           // Database entities
+├── Form/             // Form types for web forms
+│   ├── Auth/
+│   ├── Card/
+│   └── ...
+├── Repository/       // Database queries
+└── Service/          // Business logic
