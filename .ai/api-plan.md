@@ -43,6 +43,9 @@
      ```
    - **Response:** 201 Created with user details (excluding password).
    - **Errors:** 400 Bad Request if validation fails.
+   - **Business Logic:**
+     - Validate email format and password strength.
+     - Create a new user with default settings.
 
 2. **User Login**
    - **Method:** POST
@@ -57,6 +60,9 @@
      ```
    - **Response:** 200 OK with JWT token.
    - **Errors:** 401 Unauthorized if credentials are invalid.
+   - **Business Logic:**
+     - Verify user credentials and generate a JWT token.
+     - Enforce account lockout after consecutive failed attempts.
 
 3. **Password Reset**
    - **Method:** POST
@@ -67,6 +73,9 @@
      { "email": "user@example.com" }
      ```
    - **Response:** 200 OK message indicating reset link has been sent.
+   - **Business Logic:**
+     - Verify that the provided email exists.
+     - Generate and send a secure password reset link.
 
 ### B. Deck Management
 
@@ -82,6 +91,9 @@
        "pagination": { "page": 1, "limit": 10, "total": 25 }
      }
      ```
+   - **Business Logic:**
+     - Fetch decks associated with the authenticated user.
+     - Support pagination and optional filtering.
 
 2. **Create Deck**
    - **Method:** POST
@@ -96,6 +108,9 @@
      ```
    - **Response:** 201 Created with deck details.
    - **Errors:** 400 Bad Request if name exceeds 100 characters or description exceeds 1000 characters.
+   - **Business Logic:**
+     - Validate deck name and description length constraints.
+     - Associate the new deck with the correct user.
 
 3. **Update Deck**
    - **Method:** PUT or PATCH
@@ -106,18 +121,24 @@
      { "name": "Updated Deck Name", "description": "Updated description" }
      ```
    - **Response:** 200 OK with updated deck details.
+   - **Business Logic:**
+     - Validate update data and enforce name uniqueness per user.
 
 4. **Delete Deck**
    - **Method:** DELETE
    - **URL:** /api/decks/{deckId}
    - **Description:** Soft-delete a deck (sets is_deleted flag).
    - **Response:** 204 No Content.
+   - **Business Logic:**
+     - Soft-delete the deck by marking it as deleted, preserving data integrity.
 
 5. **Reset Deck Progress**
    - **Method:** POST
    - **URL:** /api/decks/{deckId}/reset-progress
    - **Description:** Reset progress for all cards within the deck (e.g., setting due dates and repetition counters to initial values).
    - **Response:** 200 OK with confirmation message.
+   - **Business Logic:**
+     - Reset card repetition counters and due dates to restart learning.
 
 ### C. Card Management
 
@@ -133,6 +154,8 @@
        "pagination": { "page": 1, "limit": 10, "total": 50 }
      }
      ```
+   - **Business Logic:**
+     - Retrieve cards for a deck with options for filtering and pagination.
 
 2. **Create Card (Manual)**
    - **Method:** POST
@@ -149,6 +172,9 @@
      ```
    - **Response:** 201 Created with card details.
    - **Errors:** 400 if front > 200 characters or back > 1000 characters.
+   - **Business Logic:**
+     - Validate that 'front' (≤200 chars) and 'back' (≤1000 chars) meet limits.
+     - Record the card with a manual source indicator.
 
 3. **Update Card**
    - **Method:** PUT or PATCH
@@ -159,12 +185,16 @@
      { "front": "Updated front", "back": "Updated back" }
      ```
    - **Response:** 200 OK with updated card details.
+   - **Business Logic:**
+     - Update card details ensuring text length validations are met.
 
 4. **Delete Card**
    - **Method:** DELETE
    - **URL:** /api/cards/{cardId}
    - **Description:** Soft-delete a card.
    - **Response:** 204 No Content.
+   - **Business Logic:**
+     - Soft-delete the card to remove it from active views without permanent loss.
 
 5. **Bulk Delete Cards**
    - **Method:** DELETE
@@ -175,6 +205,8 @@
      { "ids": [10, 11, 12] }
      ```
    - **Response:** 204 No Content.
+   - **Business Logic:**
+     - Allow efficient removal of multiple cards in a single transaction.
 
 ### D. AI Flashcards Generation
 
@@ -188,6 +220,9 @@
      ```
    - **Response:** 200 OK with a list of generated flashcards (each with front and back texts), AI job details, and statistics (e.g., token count, duration).
    - **Errors:** 400 Bad Request if text exceeds limit or API rate limit is reached.
+   - **Business Logic:**
+     - Validate input does not exceed 10,000 characters and enforce rate limits.
+     - Interface with the AI engine to generate flashcards while respecting daily limits.
 
 2. **Manage Generated Flashcards**
    - **a. View Generated Flashcards**
@@ -195,7 +230,9 @@
      - **URL:** /api/ai/jobs/{jobId}/flashcards
      - **Description:** Retrieve flashcards generated for a specific AI job.
      - **Response:** List of flashcards with statuses (accepted, edited, rejected).
-   
+   - **Business Logic:**
+     - Retrieve the list of flashcards produced for a specific AI job.
+
    - **b. Update Flashcard Status (Accept/Edit/Reject)**
      - **Method:** PATCH
      - **URL:** /api/ai/flashcards/{flashcardId}
@@ -205,6 +242,8 @@
        { "status": "accepted", "edited_front": null, "edited_back": null }
        ```
      - **Response:** 200 OK with updated flashcard details.
+   - **Business Logic:**
+     - Allow users to review and modify the status or content of generated flashcards.
 
 3. **Bulk Save Accepted Flashcards to a Deck**
    - **Method:** POST
@@ -215,6 +254,8 @@
      { "deck_id": 1 }
      ```
    - **Response:** 200 OK with summary of cards saved.
+   - **Business Logic:**
+     - Persist accepted flashcards into a chosen deck while ensuring daily limits are not exceeded.
 
 ### E. Spaced Repetition (SR) Session Endpoints
 
@@ -227,6 +268,9 @@
      ```json
      { "card": { "id": 20, "front": "...", "back": "...", "due_date": "..." } }
      ```
+   - **Business Logic:**
+     - Identify and return the next due flashcard based on the spaced repetition algorithm.
+     - Support optional filtering by deck.
 
 2. **Submit SR Answer**
    - **Method:** POST
@@ -237,6 +281,8 @@
      { "card_id": 20, "result": "known" }
      ```
    - **Response:** 200 OK with updated card scheduling details.
+   - **Business Logic:**
+     - Process the study session result to adjust the card's repetition count and due date accordingly.
 
 ### F. Admin Endpoints (Protected: Admin Role Only)
 
@@ -245,24 +291,32 @@
    - **URL:** /api/admin/users
    - **Description:** Retrieve list of users along with account statuses, limits, and KPIs.
    - **Response:** Paginated list of users.
+   - **Business Logic:**
+     - Provide an overview of user accounts with relevant status and usage information.
 
 2. **Lock/Unlock or Delete User Account**
    - **Method:** PATCH or DELETE
    - **URL:** /api/admin/users/{userId}
    - **Description:** Modify user account status (e.g., lock after 5 failed logins, delete account).
    - **Response:** 200 OK with status message.
+   - **Business Logic:**
+     - Allow secure modification of user account status by administrators.
 
 3. **Reset User Limits**
    - **Method:** POST
    - **URL:** /api/admin/users/{userId}/reset-limits
    - **Description:** Manually reset the rate limits and flashcard counters for a user.
    - **Response:** 200 OK with confirmation.
+   - **Business Logic:**
+     - Enable administrators to reset API and flashcard usage limits for individual users.
 
 4. **View KPI Dashboard**
    - **Method:** GET
    - **URL:** /api/admin/kpi
    - **Description:** Retrieve global and per-user KPIs (e.g., KPI-A and KPI-B as defined in the PRD).
    - **Response:** 200 OK with KPI details.
+   - **Business Logic:**
+     - Display key performance metrics and usage statistics for monitoring system health.
 
 ## 3. Authentication and Authorization
 
