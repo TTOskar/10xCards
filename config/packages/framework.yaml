@@ -8,6 +8,13 @@ framework:
     #esi: true
     #fragments: true
 
+    # Lock configuration
+    lock:
+        # use the database for locks
+        resources:
+            ai_generate_flashcards:
+                dsn: 'doctrine://default'
+
 when@test:
     framework:
         test: true
