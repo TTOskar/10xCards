@@ -1,9 +1,10 @@
 ---
 description: Tailwind CSS and UI component best practices for modern web applications
 globs: **/*.css, **/*.tsx, **/*.jsx, tailwind.config.js, tailwind.config.ts
+alwaysApply: false
 ---
 
-# Tailwind CSS Best Practices
+# Tailwind CSS and Flowbite Best Practices
 
 ## Project Setup
 - Use proper Tailwind configuration
@@ -46,12 +47,30 @@ globs: **/*.css, **/*.tsx, **/*.jsx, tailwind.config.js, tailwind.config.ts
 - Implement proper hover states
 
 ## Components
-- Use shadcn/ui components when available
-- Extend components properly
-- Keep component variants consistent
-- Implement proper animations
-- Use proper transition utilities
-- Keep accessibility in mind
+- Use Flowbite components as primary UI building blocks
+- Follow Flowbite component structure exactly as documented
+- Customize Flowbite components using Tailwind utilities
+- Keep dark mode support for all Flowbite components
+- Maintain consistent spacing between Flowbite components
+- Use Flowbite's interactive components (dropdowns, modals, etc.) with proper JavaScript initialization
+- Implement proper ARIA attributes for accessibility
+- Use proper Flowbite data attributes for JavaScript functionality
+- Keep component variants consistent with Flowbite's design system
+- Implement proper animations and transitions as provided by Flowbite
+- Ensure proper mobile responsiveness of Flowbite components
+- Use Flowbite's form components for consistent form styling
+
+## Flowbite Integration
+- Use CDN links in base template for both CSS and JS
+- Initialize Flowbite components properly in JavaScript when needed
+- Follow Flowbite's markup structure precisely
+- Use Flowbite's predefined color schemes
+- Implement proper dark mode toggle using Flowbite's system
+- Use Flowbite's grid system in conjunction with Tailwind's
+- Keep Flowbite component classes grouped together
+- Maintain proper order of utility classes vs Flowbite classes
+- Use Flowbite's interactive components with proper event handling
+- Follow Flowbite's accessibility guidelines
 
 ## Responsive Design
 - Use mobile-first approach
@@ -75,4 +94,16 @@ globs: **/*.css, **/*.tsx, **/*.jsx, tailwind.config.js, tailwind.config.ts
 - Use proper documentation
 - Implement proper testing
 - Follow accessibility guidelines
-- Use proper version control 
+- Use proper version control
+
+## Flowbite Component Guidelines
+- Buttons: Use Flowbite's button components with proper variants (primary, secondary, outline)
+- Forms: Implement form elements using Flowbite's form components
+- Modals: Use Flowbite's modal system with proper triggers and closers
+- Navigation: Implement responsive navigation using Flowbite's navbar components
+- Cards: Use Flowbite's card components for consistent content containers
+- Tables: Implement tables using Flowbite's table components
+- Alerts: Use Flowbite's alert system for user notifications
+- Dropdowns: Implement dropdowns using Flowbite's dropdown system
+- Tabs: Use Flowbite's tab components for content organization
+- Tooltips: Implement tooltips using Flowbite's tooltip system 
