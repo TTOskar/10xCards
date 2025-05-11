@@ -96,6 +96,15 @@ php bin/console app:backup-db                # Create DB backup
 php bin/console app:delete-user              # GDPR user deletion
 ```
 
+### Assets & Frontend
+```bash
+# Development
+php bin/console tailwind:build --watch  # Watch Tailwind CSS changes
+
+# Production deployment
+php bin/console tailwind:build --minify  # Build and minify Tailwind CSS
+php bin/console asset-map:compile        # Compile and version assets
+```
 
 ## Project Scope
 
