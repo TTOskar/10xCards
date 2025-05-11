@@ -21,8 +21,8 @@ class AiJob
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 36)]
-    private string $userId;
+    #[ORM\Column(nullable: true)]
+    private ?int $userId;
 
     #[ORM\Column]
     #[Assert\PositiveOrZero]
@@ -56,7 +56,7 @@ class AiJob
     private Collection $flashcards;
 
     public function __construct(
-        string $userId,
+        ?int $userId,
         int $inputTextLength,
         int $tokenCount,
         int $flashcardsCount,
@@ -78,7 +78,7 @@ class AiJob
         return $this->id;
     }
 
-    public function getUserId(): string
+    public function getUserId(): ?int
     {
         return $this->userId;
     }

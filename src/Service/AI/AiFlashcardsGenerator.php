@@ -30,12 +30,16 @@ final class AiFlashcardsGenerator implements AiFlashcardsGeneratorInterface
 
     public function generate(GenerateFlashcardsRequest $request): GenerateFlashcardsResponse
     {
-        $userId = $this->tokenStorage->getToken()?->getUserIdentifier() ?? 'anonymous';
-        $limiter = $this->aiGenerateFlashcardsLimiter->create($userId);
+        $token = $this->tokenStorage->getToken();
+        $userId = $token && is_numeric($token->getUserIdentifier()) 
+            ? (int) $token->getUserIdentifier() 
+            : null;
+
+        $limiter = $this->aiGenerateFlashcardsLimiter->create($userId ? (string) $userId : 'anonymous');
 
         if ($limiter->consume()->isAccepted() === false) {
             $this->logger->warning('Rate limit exceeded for user {user}', [
-                'user' => $userId,
+                'user' => $userId ?? 'anonymous',
                 'input_length' => strlen($request->getInputText()),
             ]);
             
@@ -49,7 +53,7 @@ final class AiFlashcardsGenerator implements AiFlashcardsGeneratorInterface
         
         try {
             $this->logger->info('Starting flashcards generation for user {user}', [
-                'user' => $userId,
+                'user' => $userId ?? 'anonymous',
                 'input_length' => strlen($inputText),
             ]);
 
@@ -76,7 +80,7 @@ final class AiFlashcardsGenerator implements AiFlashcardsGeneratorInterface
             $this->aiJobRepository->save($aiJob);
             
             $this->logger->info('Successfully generated flashcards for user {user}', [
-                'user' => $userId,
+                'user' => $userId ?? 'anonymous',
                 'job_id' => $aiJob->getId(),
                 'flashcards_count' => $aiJob->getFlashcardsCount(),
                 'duration_ms' => $aiJob->getDurationMs(),
@@ -86,7 +90,7 @@ final class AiFlashcardsGenerator implements AiFlashcardsGeneratorInterface
             return $this->flashcardsMapper->mapJobToResponse($aiJob);
         } catch (\Throwable $e) {
             $this->logger->error('Failed to generate flashcards for user {user}: {error}', [
-                'user' => $userId,
+                'user' => $userId ?? 'anonymous',
                 'error' => $e->getMessage(),
                 'exception' => $e,
                 'input_length' => strlen($inputText),

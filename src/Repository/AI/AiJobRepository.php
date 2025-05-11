@@ -25,8 +25,9 @@ class AiJobRepository extends ServiceEntityRepository
 
     public function save(AiJob $aiJob): void
     {
-        $this->_em->persist($aiJob);
-        $this->_em->flush();
+        $em = $this->getEntityManager();
+        $em->persist($aiJob);
+        $em->flush();
     }
 
     /**
