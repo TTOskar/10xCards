@@ -46,12 +46,9 @@ Dzięki temu rozwiązaniu użytkownicy mogą efektywnie przeglądać i zarządza
 ## 3. Wykorzystywane typy
 - **DTO:**
   - `UpdateFlashcardDTO` – służy do walidacji i mapowania danych przy aktualizacji statusu fiszki.
-  - `BulkSaveFlashcardsDTO` – służy do walidacji danych przy operacji zbiorczego zapisu.
+  - `BulkSaveFlashcardsDTO` – służy do walidacji danych przy operacji zbiorczego zapisu (rozszerzony o pole `action`).
   - `FlashcardResponseDTO` – reprezentuje pojedynczą fiszkę w odpowiedzi.
   - `AIJobFlashcardsResponseDTO` – zawiera listę fiszek oraz metadane związane z zadaniem AI.
-- **Modele poleceń (Command Modele):**
-  - `UpdateFlashcardCommand` – enkapsuluje logikę aktualizacji fiszki.
-  - `BulkSaveFlashcardsCommand` – enkapsuluje logikę zbiorczego zapisu fiszek do talii.
 
 ## 4. Szczegóły odpowiedzi
 - **GET** `/api/ai/jobs/{jobId}/flashcards`
@@ -102,12 +99,12 @@ Dzięki temu rozwiązaniu użytkownicy mogą efektywnie przeglądać i zarządza
 - Asynchroniczne przetwarzanie operacji zbiorczego zapisu, jeśli operacja staje się czasochłonna.
 
 ## 9. Etapy wdrożenia
-1. Zdefiniowanie oraz implementacja modeli DTO i poleceń (Command):
-   - `UpdateFlashcardDTO`, `BulkSaveFlashcardsDTO` (rozszerzony o pole `action`), `UpdateFlashcardCommand`, `BulkSaveFlashcardsCommand` (z logiką obsługi akcji "save" i "reject").
+1. Zdefiniowanie oraz implementacja modeli DTO:
+   - `UpdateFlashcardDTO`, `BulkSaveFlashcardsDTO` (rozszerzony o pole `action`).
 2. Utworzenie lub rozbudowa warstwy serwisowej (np. `FlashcardService`), która:
    - Pobierze fiszki dla określonego `jobId`.
    - Zaktualizuje pojedyncze fiszki na podstawie danych zawartych w DTO.
-   - Wykona zbiorczy zapis zaakceptowanych fiszek do wybranej talii.
+   - Wykona zbiorczy zapis zaakceptowanych fiszek do wybranej talii lub oznaczy je jako odrzucone, w zależności od wartości przekazanego parametru `action`.
 3. Rozszerzenie repository o metody obsługujące operacje na tabeli `app.ai_job_flashcards` oraz integrację z tabelą `app.card`.
 4. Implementacja kontrolerów API w katalogu `/src/Controller/Api/`:
    - Punkt końcowy GET do pobierania fiszek.
@@ -118,4 +115,4 @@ Dzięki temu rozwiązaniu użytkownicy mogą efektywnie przeglądać i zarządza
 7. Przeprowadzenie testów jednostkowych i integracyjnych dla wszystkich operacji.
 8. Dokumentacja punktów końcowych w formacie OpenAPI/Swagger.
 9. Przeprowadzenie przeglądu kodu zgodnie z zasadami clean-code, codequality oraz symfony-package-coding-standards.
-10. Wdrożenie na środowisku testowym. 
+10. Wdrożenie na środowisku testowym oraz przeprowadzenie testów obciążeniowych przed wdrożeniem produkcyjnym. 

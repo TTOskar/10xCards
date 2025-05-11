@@ -20,10 +20,10 @@ Endpoint służy do generowania fiszek z wykorzystaniem silnika AI w oparciu o t
   Utworzyć typ `GenerateFlashcardsRequest` w folderze `/src/DTO/Request` do mapowania danych przychodzących.
 - **DTO Response:**  
   Utworzyć typ `GenerateFlashcardsResponse` w folderze `/src/DTO/Response`, który będzie zawierać szczegóły zadania AI i tablicę wygenerowanych fiszek.
-- **Command Model:**  
-  Rozważyć utworzenie `GenerateFlashcardsCommand` jako obiektu komendowego, który przekazuje wszystkie niezbędne dane do warstwy biznesowej.
 - **Dodatkowy DTO:**  
   `FlashcardDTO` do reprezentacji pojedynczej fiszki (pola: `front` i `back`).
+- **Uwagi:**  
+  Logikę generowania fizek zostanie zaimplementowana bezpośrednio w serwisie (np. `AiFlashcardsGenerator`), w związku z czym nie stosujemy dedykowanego Command Modelu.
 
 ## 4. Szczegóły odpowiedzi
 - **Sukces (200 OK):**
@@ -56,7 +56,7 @@ Endpoint służy do generowania fiszek z wykorzystaniem silnika AI w oparciu o t
    - Walidacja długości `input_text` (min. 1000 znaków, maks. 10 000 znaków) przy użyciu Symfony Validator.
    - Sprawdzenie ograniczeń szybkości (5 żądań/min) za pomocą wbudowanego komponentu RateLimiter.
 3. **Wywołanie usługi AI:**  
-   - Po pomyślnej walidacji, dane są przekazywane do usługi (np. `AiFlashcardsGenerator`), która korzysta z Symfony HttpClient do komunikacji z zewnętrznym silnikiem AI (np. OpenAI/Openrouter.ai).
+   - Po pomyślnej walidacji, dane są przekazywane do serwisu (np. `AiFlashcardsGenerator`), który korzysta z Symfony HttpClient do komunikacji z zewnętrznym silnikiem AI (np. OpenAI/Openrouter.ai).
 4. **Zapis do bazy danych:**  
    - Utworzenie wpisu w tabeli `app.ai_jobs` z danymi dotyczącymi zadania.
    - Wygenerowane fiszki są zapisywane w tabeli `app.ai_job_flashcards` z powiązaniem do danego zadania.
@@ -72,7 +72,7 @@ Endpoint służy do generowania fiszek z wykorzystaniem silnika AI w oparciu o t
   Aby zapobiec atakom typu injection, dane wejściowe muszą być dokładnie walidowane.
 - **Rate Limiting:**  
   Implementacja rate limitera chroniącego przed nadużyciami i atakami DDoS.
-- **Api Timeout:**
+- **Api Timeout:**  
   Timeout zapytania do zewnętrznego silnika API wynosi 60s.
 
 ## 7. Obsługa błędów
@@ -102,12 +102,7 @@ Endpoint służy do generowania fiszek z wykorzystaniem silnika AI w oparciu o t
 3. **Walidacja danych wejściowych:**  
    - Dodanie walidacji długości `input_text` i integracja z Symfony Validator.
 4. **Implementacja logiki biznesowej:**  
-   - Utworzenie serwisu (np. `AiFlashcardsGenerator`), który:
-     - Sprawdza warunki wejściowe.
-     - Komunikuje się z zewnętrznym silnikiem AI przy użyciu Symfony HttpClient.
-     - Sprwadza czas odpowiedzi zewnętrznego silnika AI.
-     - Rejestruje wynik w bazie danych (`app.ai_jobs` oraz `app.ai_job_flashcards`).
-5. **Implementacja ograniczenia szybkości:**  
+   - Utworzenie serwisu (np. `AiFlashcardsGenerator`), który:\n     - Sprawdza warunki wejściowe.\n     - Komunikuje się z zewnętrznym silnikiem AI przy użyciu Symfony HttpClient.\n     - Sprawdza czas odpowiedzi zewnętrznego silnika AI.\n     - Rejestruje wynik w bazie danych (`app.ai_jobs` oraz `app.ai_job_flashcards`).\n     \n   - Logika generowania fiszek zostanie zaimplementowana bezpośrednio w serwisie, eliminując potrzebę stosowania dedykowanego Command Modelu.\n5. **Implementacja ograniczenia szybkości:**  
    - Konfiguracja i integracja RateLimiter w celu ścisłego egzekwowania limitów 5 żądań/min.
 6. **Integracja mechanizmów bezpieczeństwa:**  
    - Wdrożenie zabezpieczeń przy użyciu JWT oraz konfiguracja polityk RLS dla bazy danych.
