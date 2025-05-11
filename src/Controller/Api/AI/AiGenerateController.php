@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\AI;
+namespace App\Controller\Api\AI;
 
 use App\DTO\Request\AI\GenerateFlashcardsRequest;
 use App\DTO\Response\AI\GenerateFlashcardsResponse;
