@@ -8,7 +8,7 @@ Endpoint służy do generowania fiszek z wykorzystaniem silnika AI w oparciu o t
 - **Struktura URL:** `/api/ai/generate`  
 - **Parametry:**
   - **Wymagane:**
-    - `input_text` (string): Tekst wejściowy do generacji fiszek (maksymalnie 10 000 znaków).
+    - `input_text` (string): Tekst wejściowy do generacji fiszek (maksymalnie 10 000 znaków oraz minimalnie 1000 znaków).
   - **Opcjonalne:** Brak  
 - **Request Body (przykład):**
   ```json
@@ -53,7 +53,7 @@ Endpoint służy do generowania fiszek z wykorzystaniem silnika AI w oparciu o t
    - Kontroler odbiera żądanie POST na endpoint `/api/ai/generate`.
    - Żądanie jest mapowane do obiektu `GenerateFlashcardsRequest`.
 2. **Walidacja:**  
-   - Walidacja długości `input_text` (maks. 10 000 znaków) przy użyciu Symfony Validator.
+   - Walidacja długości `input_text` (min. 1000 znaków, maks. 10 000 znaków) przy użyciu Symfony Validator.
    - Sprawdzenie ograniczeń szybkości (5 żądań/min) za pomocą wbudowanego komponentu RateLimiter.
 3. **Wywołanie usługi AI:**  
    - Po pomyślnej walidacji, dane są przekazywane do usługi (np. `AiFlashcardsGenerator`), która korzysta z Symfony HttpClient do komunikacji z zewnętrznym silnikiem AI (np. OpenAI/Openrouter.ai).

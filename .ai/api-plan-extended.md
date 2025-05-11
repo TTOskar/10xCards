@@ -192,7 +192,7 @@ This separation ensures a clear division between the API (backend data access) a
 1. **Generate Flashcards via AI**
    - **Method:** POST
    - **URL:** `/api/ai/generate`
-   - **Description:** Generate flashcards based on pasted text (max 10,000 characters; max 5 requests/min).
+   - **Description:** Generate flashcards based on pasted text (min 1000 characters, max 10,000 characters; max 5 requests/min).
    - **Request Payload:**
      ```json
      { "input_text": "Your long text here..." }

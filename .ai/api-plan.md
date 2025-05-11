@@ -213,7 +213,7 @@
 1. **Generate Flashcards via AI**
    - **Method:** POST
    - **URL:** /api/ai/generate
-   - **Description:** Generate flashcards based on pasted text (maximum 10,000 characters; max 5 requests/min).
+   - **Description:** Generate flashcards based on pasted text (minimum 1000 characters, maximum 10,000 characters; max 5 requests/min).
    - **Request Payload:**
      ```json
      { "input_text": "Your long text here..." }
@@ -221,7 +221,7 @@
    - **Response:** 200 OK with a list of generated flashcards (each with front and back texts), AI job details, and statistics (e.g., token count, duration).
    - **Errors:** 400 Bad Request if text exceeds limit or API rate limit is reached.
    - **Business Logic:**
-     - Validate input does not exceed 10,000 characters and enforce rate limits.
+     - Validate input does not exceed 10,000 characters and is not less than 1000 characters and enforce rate limits.
      - Interface with the AI engine to generate flashcards while respecting daily limits.
 
 2. **Manage Generated Flashcards**
@@ -341,7 +341,7 @@
   - AI-generated flashcards must adhere to these same limits.
 
 - **Business Logic per PRD:**
-  - **AI Flashcards Generation:** Validate maximum input text (10,000 characters) and enforce a rate of 5 requests per minute. Return up to 500 generated flashcards daily.
+  - **AI Flashcards Generation:** Validate maximum input text (10,000 characters), minimum input text (1000 characters) and enforce a rate of 5 requests per minute. Return up to 500 generated flashcards daily.
   - **Flashcard Acceptance/Editing:** Endpoints allow users to accept, edit, or reject AI-generated flashcards before saving them permanently.
   - **Bulk Operations:** Both bulk save and bulk delete endpoints ensure that only designated flashcards (e.g., accepted by AI) are processed, with checks against daily limits (max 500 cards/day).
   - **Spaced Repetition Session:** A dedicated session endpoint presents due flashcards and processes user responses (e.g., known, unknown, postpone) to adjust repetition counters and due dates.
