@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace App\Repository\AI;
 
+use App\Entity\AI\AiJob;
 use App\Entity\AI\AiJobFlashcard;
+use App\Enum\AI\FlashcardStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -52,6 +55,46 @@ class AiJobFlashcardRepository extends ServiceEntityRepository
             ->where('j.userId = :userId')
             ->setParameter('userId', $userId)
             ->groupBy('f.status')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @return AiJobFlashcard[]
+     */
+    public function findPaginatedByJob(AiJob $job, int $page, int $perPage): array
+    {
+        return $this->createQueryBuilder('f')
+            ->andWhere('f.aiJob = :job')
+            ->setParameter('job', $job)
+            ->orderBy('f.createdAt', Criteria::ASC)
+            ->setFirstResult(($page - 1) * $perPage)
+            ->setMaxResults($perPage)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function countByJob(AiJob $job): int
+    {
+        return $this->createQueryBuilder('f')
+            ->select('COUNT(f.id)')
+            ->andWhere('f.aiJob = :job')
+            ->setParameter('job', $job)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
+     * @return AiJobFlashcard[]
+     */
+    public function findByJobAndStatus(AiJob $job, FlashcardStatus $status): array
+    {
+        return $this->createQueryBuilder('f')
+            ->andWhere('f.aiJob = :job')
+            ->andWhere('f.status = :status')
+            ->setParameter('job', $job)
+            ->setParameter('status', $status)
+            ->orderBy('f.createdAt', Criteria::ASC)
             ->getQuery()
             ->getResult();
     }

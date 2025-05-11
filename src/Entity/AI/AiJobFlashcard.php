@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity\AI;
 
-use App\Enum\AI\AiJobFlashcardStatus;
+use App\Enum\AI\FlashcardStatus;
 use App\Repository\AI\AiJobFlashcardRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -33,8 +33,8 @@ class AiJobFlashcard
     #[Assert\Length(max: 1000)]
     private string $back;
 
-    #[ORM\Column(length: 50, enumType: AiJobFlashcardStatus::class)]
-    private AiJobFlashcardStatus $status;
+    #[ORM\Column(length: 50, enumType: FlashcardStatus::class)]
+    private FlashcardStatus $status;
 
     #[ORM\Column(length: 200, nullable: true)]
     #[Assert\Length(max: 200)]
@@ -51,7 +51,7 @@ class AiJobFlashcard
         AiJob $aiJob,
         string $front,
         string $back,
-        AiJobFlashcardStatus $status = AiJobFlashcardStatus::ACCEPTED,
+        FlashcardStatus $status = FlashcardStatus::ACCEPTED,
     ) {
         $this->aiJob = $aiJob;
         $this->front = $front;
@@ -80,12 +80,12 @@ class AiJobFlashcard
         return $this->back;
     }
 
-    public function getStatus(): AiJobFlashcardStatus
+    public function getStatus(): FlashcardStatus
     {
         return $this->status;
     }
 
-    public function setStatus(AiJobFlashcardStatus $status): void
+    public function setStatus(FlashcardStatus $status): void
     {
         $this->status = $status;
     }
@@ -99,7 +99,7 @@ class AiJobFlashcard
     {
         if ($editedFront !== null && $editedFront !== $this->front) {
             $this->editedFront = $editedFront;
-            $this->status = AiJobFlashcardStatus::EDITED;
+            $this->status = FlashcardStatus::EDITED;
         }
     }
 
@@ -112,7 +112,7 @@ class AiJobFlashcard
     {
         if ($editedBack !== null && $editedBack !== $this->back) {
             $this->editedBack = $editedBack;
-            $this->status = AiJobFlashcardStatus::EDITED;
+            $this->status = FlashcardStatus::EDITED;
         }
     }
 
@@ -133,26 +133,26 @@ class AiJobFlashcard
 
     public function isAccepted(): bool
     {
-        return $this->status === AiJobFlashcardStatus::ACCEPTED;
+        return $this->status === FlashcardStatus::ACCEPTED;
     }
 
     public function isEdited(): bool
     {
-        return $this->status === AiJobFlashcardStatus::EDITED;
+        return $this->status === FlashcardStatus::EDITED;
     }
 
     public function isRejected(): bool
     {
-        return $this->status === AiJobFlashcardStatus::REJECTED;
+        return $this->status === FlashcardStatus::REJECTED;
     }
 
     public function accept(): void
     {
-        $this->status = AiJobFlashcardStatus::ACCEPTED;
+        $this->status = FlashcardStatus::ACCEPTED;
     }
 
     public function reject(): void
     {
-        $this->status = AiJobFlashcardStatus::REJECTED;
+        $this->status = FlashcardStatus::REJECTED;
     }
 } 

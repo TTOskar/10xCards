@@ -7,7 +7,7 @@ namespace App\Service\AI;
 use App\DTO\Request\AI\GenerateFlashcardsRequest;
 use App\DTO\Response\AI\GenerateFlashcardsResponse;
 use App\Entity\AI\AiJob;
-use App\Enum\AI\AiJobStatus;
+use App\Enum\AI\JobStatus;
 use App\Exception\RateLimitExceededException;
 use App\Repository\AI\AiJobRepository;
 use App\Service\AI\Client\AiClientInterface;
@@ -68,7 +68,7 @@ final class AiFlashcardsGenerator implements AiFlashcardsGeneratorInterface
                 tokenCount: $this->aiClient->getLastRequestTokenCount(),
                 flashcardsCount: count($flashcards),
                 durationMs: $durationMs,
-                status: AiJobStatus::COMPLETED,
+                status: JobStatus::COMPLETED,
             );
 
             // Add flashcards to the job
@@ -103,7 +103,7 @@ final class AiFlashcardsGenerator implements AiFlashcardsGeneratorInterface
                 tokenCount: 0,
                 flashcardsCount: 0,
                 durationMs: (int) ((microtime(true) - $startTime) * 1000),
-                status: AiJobStatus::FAILED,
+                status: JobStatus::FAILED,
             );
             
             $this->aiJobRepository->save($aiJob);

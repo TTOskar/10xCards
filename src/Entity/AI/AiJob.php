@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity\AI;
 
-use App\Enum\AI\AiJobStatus;
+use App\Enum\AI\JobStatus;
 use App\Repository\AI\AiJobRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -40,8 +40,8 @@ class AiJob
     #[Assert\PositiveOrZero]
     private int $durationMs;
 
-    #[ORM\Column(length: 50, enumType: AiJobStatus::class)]
-    private AiJobStatus $status;
+    #[ORM\Column(length: 50, enumType: JobStatus::class)]
+    private JobStatus $status;
 
     #[ORM\Column]
     private \DateTimeImmutable $createdAt;
@@ -61,7 +61,7 @@ class AiJob
         int $tokenCount,
         int $flashcardsCount,
         int $durationMs,
-        AiJobStatus $status = AiJobStatus::PENDING,
+        JobStatus $status = JobStatus::PENDING,
     ) {
         $this->userId = $userId;
         $this->inputTextLength = $inputTextLength;
@@ -103,12 +103,12 @@ class AiJob
         return $this->durationMs;
     }
 
-    public function getStatus(): AiJobStatus
+    public function getStatus(): JobStatus
     {
         return $this->status;
     }
 
-    public function setStatus(AiJobStatus $status): void
+    public function setStatus(JobStatus $status): void
     {
         $this->status = $status;
     }
@@ -134,26 +134,26 @@ class AiJob
 
     public function isCompleted(): bool
     {
-        return $this->status === AiJobStatus::COMPLETED;
+        return $this->status === JobStatus::COMPLETED;
     }
 
     public function isPending(): bool
     {
-        return $this->status === AiJobStatus::PENDING;
+        return $this->status === JobStatus::PENDING;
     }
 
     public function isFailed(): bool
     {
-        return $this->status === AiJobStatus::FAILED;
+        return $this->status === JobStatus::FAILED;
     }
 
     public function complete(): void
     {
-        $this->status = AiJobStatus::COMPLETED;
+        $this->status = JobStatus::COMPLETED;
     }
 
     public function fail(): void
     {
-        $this->status = AiJobStatus::FAILED;
+        $this->status = JobStatus::FAILED;
     }
 } 
