@@ -10,7 +10,8 @@
 2. Frontend (server-side renderowane)
    • Twig + fetch/Axios do własnego API  
    • Symfony UX (Stimulus + Turbo) – modale, filtry, bulk‐akcje  
-   • Tailwind CSS 4 (Webpack Encore lub Vite)  
+   • Tailwind CSS 4 (Webpack Encore)  
+   • Komponenty Flowbyte
 
 3. Integracja AI
    • Symfony HttpClient (PSR-18) + Openrouter.ai/OpenAI-PHP  
