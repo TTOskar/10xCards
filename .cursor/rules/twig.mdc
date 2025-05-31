@@ -1,0 +1,16 @@
+---
+description: 
+globs: **/*.twig.html
+alwaysApply: false
+---
+1. **Używaj poprawnej składni Twig** – Korzystaj wyłącznie z dostępnych funkcji i filtrów Twig oraz standardowych konstrukcji {% ... %}, {{ ... }}, {# ... #}.
+2. **Separuj logikę od widoku** – Ogranicz logikę w szablonie Twig do minimum. Zaawansowane operacje pozostaw backendowi.
+3. **Nie duplikuj kodu** – Wykorzystuj {% include %}, {% embed %}, {% extends %} i bloki {% block %} tam, gdzie to możliwe, by unikać powielania kodu.
+4. **Stosuj czytelne i opisowe nazwy zmiennych** – Nazwy w szablonie powinny jasno wskazywać na przechowywane przez nie dane.
+5. **Zadbaj o bezpieczeństwo** – Domyślnie stosuj autocescapowanie (autoescape) dla zmiennych wyświetlanych użytkownikowi.
+6. **Dbaj o responsywność i semantykę HTML** – Twórz strukturę zgodną ze standardami HTML5 oraz dostosowaną do urządzeń mobilnych.
+7. **Styluj przez klasy CSS** – Nie umieszczaj stylów inline, zamiast tego korzystaj z klas CSS zdefiniowanych w plikach .css.
+8. **Komentuj złożone fragmenty** – W miejscach mniej oczywistych dodawaj krótkie komentarze Twig {# ... #}.
+9. **Optymalizuj renderowanie** – Unikaj niepotrzebnego iterowania i sprawdzania warunków wewnątrz pętli.
+
+10. **Stosuj konwencję BEM dla klas CSS** – Nazewnictwo klas według metodologii Block__Element--Modifier dla lepszej czytelności i skalowalności CSS.
