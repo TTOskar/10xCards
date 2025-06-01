@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Generate Flashcards with AI - 10xCards{% endblock %}
+{% block title %}Generowanie fiszek przez AI - 10xCards{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
@@ -8,76 +8,151 @@
 
 {% block body %}
     <div class="container mx-auto px-4 py-8">
-        {# Flash messages #}
-        {% for label, messages in app.flashes %}
-            {% for message in messages %}
-                <div id="alert-{{ loop.index }}" class="flex items-center p-4 mb-4 text-{{ label == 'error' ? 'red' : 'green' }}-800 rounded-lg bg-{{ label == 'error' ? 'red' : 'green' }}-50 dark:bg-gray-800 dark:text-{{ label == 'error' ? 'red' : 'green' }}-400" role="alert">
-                    <div class="ms-3 text-sm font-medium">
-                        {{ message }}
-                    </div>
-                    <button type="button" class="ms-auto -mx-1.5 -my-1.5 bg-{{ label == 'error' ? 'red' : 'green' }}-50 text-{{ label == 'error' ? 'red' : 'green' }}-500 rounded-lg focus:ring-2 focus:ring-{{ label == 'error' ? 'red' : 'green' }}-400 p-1.5 hover:bg-{{ label == 'error' ? 'red' : 'green' }}-200 inline-flex items-center justify-center h-8 w-8 dark:bg-gray-800 dark:text-{{ label == 'error' ? 'red' : 'green' }}-400 dark:hover:bg-gray-700" data-dismiss-target="#alert-{{ loop.index }}" aria-label="Close">
-                        <span class="sr-only">Close</span>
-                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-                        </svg>
-                    </button>
-                </div>
-            {% endfor %}
-        {% endfor %}
+        <h1 class="text-3xl font-bold mb-8">Generowanie fiszek przez AI</h1>
 
-        {# User limits info #}
-        <div class="p-4 mb-4 text-sm text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400" role="alert">
-            <div class="flex items-center">
-                <span class="font-medium me-2">Available limits:</span>
-                <span class="me-4">Characters: {{ user_limits.remainingChars }}/10000</span>
-                <span class="me-4">Requests: {{ user_limits.remainingRequestsPerMin }}/5 per minute</span>
-                <span>Flashcards today: {{ user_limits.remainingFlashcardsToday }}/500</span>
+        {# Limits display #}
+        <div class="bg-white p-6 rounded-lg shadow-sm mb-8">
+            <h2 class="text-xl font-semibold mb-4">Twoje limity</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="p-4 bg-gray-50 rounded-lg">
+                    <p class="text-sm text-gray-600">Pozostałe znaki</p>
+                    <p class="text-2xl font-bold">{{ user_limits.remainingChars }}</p>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-lg">
+                    <p class="text-sm text-gray-600">Pozostałe żądania/min</p>
+                    <p class="text-2xl font-bold">{{ user_limits.remainingRequestsPerMin }}</p>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-lg">
+                    <p class="text-sm text-gray-600">Pozostałe fiszki/dzień</p>
+                    <p class="text-2xl font-bold">{{ user_limits.remainingFlashcardsToday }}</p>
+                </div>
             </div>
         </div>
 
         {# Generation form #}
-        {{ form_start(form, {'attr': {'class': 'mb-8'}}) }}
-            <div class="mb-4">
-                {{ form_label(form.input_text, null, {'label_attr': {'class': 'block mb-2 text-sm font-medium text-gray-900 dark:text-white'}}) }}
-                {{ form_widget(form.input_text) }}
-                {{ form_errors(form.input_text, {'attr': {'class': 'mt-2 text-sm text-red-600 dark:text-red-500'}}) }}
-            </div>
-            {{ form_widget(form.submit) }}
-        {{ form_end(form) }}
+        <div class="bg-white p-6 rounded-lg shadow-sm"
+             data-controller="form-validation"
+             data-form-validation-min-length-value="1000"
+             data-form-validation-max-length-value="10000">
+            
+            {{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
+                <div class="mb-6">
+                    {{ form_label(form.input_text, 'Tekst do przetworzenia', {'label_attr': {
+                        'class': 'block mb-2 text-sm font-medium text-gray-900'
+                    }}) }}
+                    
+                    {{ form_widget(form.input_text, {
+                        'attr': {
+                            'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5',
+                            'data-form-validation-target': 'input',
+                            'data-action': 'input->form-validation#onInput'
+                        }
+                    }) }}
 
-        {# Loading indicator - hidden by default #}
-        <div id="loading-indicator" class="hidden flex items-center justify-center mb-8">
-            <div role="status">
-                <svg aria-hidden="true" class="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
-                    <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
-                </svg>
-                <span class="sr-only">Loading...</span>
-            </div>
-            <span class="ml-3 text-gray-700 dark:text-gray-300">Generating flashcards...</span>
+                    {# Character count #}
+                    <div class="mt-2 flex justify-between items-center">
+                        <span class="text-sm text-gray-500" data-form-validation-target="charCount">0/10000</span>
+                        <span class="text-sm text-red-500 hidden" data-form-validation-target="errorMessage"></span>
+                    </div>
+
+                    {{ form_errors(form.input_text, {'attr': {'class': 'text-red-500 text-sm mt-1'}}) }}
+                </div>
+
+                <button type="submit" 
+                        data-form-validation-target="submitButton"
+                        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+                    Generuj fiszki
+                </button>
+            {{ form_end(form) }}
         </div>
+
+        {# Progress indicator #}
+        <div data-controller="progress-indicator"
+             {% if job_id is defined %}data-progress-indicator-job-id-value="{{ job_id }}"{% endif %}
+             class="mt-8">
+            <div data-progress-indicator-target="progress" class="hidden">
+                <div class="mb-2 flex justify-between">
+                    <span data-progress-indicator-target="status" class="text-sm text-gray-600">
+                        Generowanie fiszek...
+                    </span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                    <div data-progress-indicator-target="progressBar"
+                         class="bg-blue-600 h-2.5 rounded-full"
+                         style="width: 0%">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Flash messages container #}
+        <div class="flash-messages mt-4"></div>
 
         {# Generated flashcards section #}
         {% if generated_flashcards is defined and generated_flashcards|length > 0 %}
-            <div class="mb-4">
+            <div class="mt-8" 
+                 data-controller="flashcard-actions"
+                 {% if job_id is defined %}data-flashcard-actions-job-id-value="{{ job_id }}"{% endif %}>
+                
                 <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-bold text-gray-900 dark:text-white">Generated Flashcards</h2>
+                    <h2 class="text-xl font-bold">Wygenerowane fiszki</h2>
                     <div class="space-x-2">
-                        <button type="button" id="accept-all" class="text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-green-800">
-                            Accept All
+                        <button type="button"
+                                data-flashcard-actions-target="acceptAll"
+                                data-action="click->flashcard-actions#acceptAll"
+                                class="text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5">
+                            Akceptuj wszystkie
                         </button>
-                        <button type="button" id="reject-all" class="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-red-600 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-red-800">
-                            Reject All
+                        <button type="button"
+                                data-flashcard-actions-target="rejectAll"
+                                data-action="click->flashcard-actions#rejectAll"
+                                class="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5">
+                            Odrzuć wszystkie
                         </button>
-                        <button type="button" id="save-selected" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
-                            Save Selected
+                        <button type="button"
+                                data-flashcard-actions-target="saveSelected"
+                                data-action="click->flashcard-actions#saveSelected"
+                                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5">
+                            Zapisz wybrane
                         </button>
                     </div>
                 </div>
-                
-                <div class="grid gap-4 mb-4" id="flashcards-container">
+
+                <div class="grid gap-4">
                     {% for flashcard in generated_flashcards %}
-                        {% include 'ai/_flashcard_item.html.twig' with {'flashcard': flashcard} %}
+                        <div class="p-4 bg-white rounded-lg shadow-sm transition-all duration-200 
+                                  hover:shadow-md relative {% if flashcard.status == 'accepted' %}border-l-4 border-green-500{% elseif flashcard.status == 'rejected' %}border-l-4 border-red-500{% endif %}"
+                             data-flashcard-actions-target="flashcard"
+                             data-flashcard-id="{{ flashcard.id }}">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="flex-1">
+                                    <h3 class="font-medium text-gray-900">{{ flashcard.front }}</h3>
+                                    <p class="mt-2 text-gray-600">{{ flashcard.back }}</p>
+                                </div>
+                                <div class="flex space-x-2 ml-4">
+                                    <button type="button"
+                                            data-action="click->flashcard-actions#accept"
+                                            class="text-green-700 hover:bg-green-100 p-2 rounded-lg">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                        </svg>
+                                    </button>
+                                    <a href="{{ path('ai_flashcard_edit', {'flashcardId': flashcard.id}) }}"
+                                       class="text-blue-700 hover:bg-blue-100 p-2 rounded-lg">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                        </svg>
+                                    </a>
+                                    <button type="button"
+                                            data-action="click->flashcard-actions#reject"
+                                            class="text-red-700 hover:bg-red-100 p-2 rounded-lg">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     {% endfor %}
                 </div>
             </div>
@@ -87,22 +162,7 @@
 
 {% block javascripts %}
     {{ parent() }}
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.querySelector('form');
-            const loadingIndicator = document.getElementById('loading-indicator');
-            
-            if (form) {
-                form.addEventListener('submit', function() {
-                    loadingIndicator.classList.remove('hidden');
-                });
-            }
-
-            // Initialize Flowbite components
-            const alerts = document.querySelectorAll('[data-dismiss-target]');
-            alerts.forEach(alert => {
-                new Dismiss(alert.parentElement);
-            });
-        });
-    </script>
+    {{ encore_entry_script_tags('form-validation') }}
+    {{ encore_entry_script_tags('progress-indicator') }}
+    {{ encore_entry_script_tags('flashcard-actions') }}
 {% endblock %} 

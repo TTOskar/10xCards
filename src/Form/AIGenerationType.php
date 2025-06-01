@@ -2,13 +2,13 @@
 
 namespace App\Form;
 
+use App\DTO\AIGenerationRequestDTO;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\Length;
-use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class AIGenerationType extends AbstractType
 {
@@ -16,21 +16,25 @@ class AIGenerationType extends AbstractType
     {
         $builder
             ->add('input_text', TextareaType::class, [
-                'label' => 'Enter your text',
+                'label' => 'Tekst do przetworzenia',
                 'attr' => [
                     'rows' => 10,
-                    'class' => 'block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
-                    'placeholder' => 'Paste your text here (minimum 1000 characters)...',
+                    'class' => 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5',
+                    'placeholder' => 'Wklej tutaj tekst do przetworzenia (minimum 1000 znaków)',
                 ],
                 'constraints' => [
-                    new NotBlank([
-                        'message' => 'Please enter some text',
+                    new Assert\NotBlank([
+                        'message' => 'Tekst nie może być pusty.',
                     ]),
-                    new Length([
+                    new Assert\Length([
                         'min' => 1000,
                         'max' => 10000,
-                        'minMessage' => 'Your text must be at least {{ limit }} characters long',
-                        'maxMessage' => 'Your text cannot be longer than {{ limit }} characters',
+                        'minMessage' => 'Tekst musi mieć co najmniej {{ limit }} znaków.',
+                        'maxMessage' => 'Tekst nie może być dłuższy niż {{ limit }} znaków.',
+                    ]),
+                    new Assert\Regex([
+                        'pattern' => '/^[\p{L}\p{N}\p{P}\s]+$/u',
+                        'message' => 'Tekst może zawierać tylko litery, cyfry, znaki interpunkcyjne i spacje.',
                     ]),
                 ],
             ])
@@ -46,8 +50,15 @@ class AIGenerationType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => null,
+            'data_class' => AIGenerationRequestDTO::class,
             'csrf_protection' => true,
+            'csrf_field_name' => '_token',
+            'csrf_token_id' => 'ai_generation',
         ]);
+    }
+
+    public function getBlockPrefix(): string
+    {
+        return 'ai_generation';
     }
 } 

@@ -1,0 +1,75 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edycja fiszki - 10xCards{% endblock %}
+
+{% block body %}
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-2xl mx-auto">
+            <div class="flex items-center justify-between mb-8">
+                <h1 class="text-3xl font-bold">Edycja fiszki</h1>
+                <a href="{{ path('ai_flashcards_generate') }}" 
+                   class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </a>
+            </div>
+
+            {# Flash messages #}
+            {% for label, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="mb-4 p-4 {% if label == 'success' %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %} rounded-lg">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endfor %}
+
+            <div class="bg-white p-6 rounded-lg shadow-sm">
+                {{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
+                    <div class="mb-6">
+                        {{ form_label(form.front, null, {
+                            'label_attr': {
+                                'class': 'block mb-2 text-sm font-medium text-gray-900'
+                            }
+                        }) }}
+                        
+                        {{ form_widget(form.front) }}
+                        
+                        {% if form_errors(form.front) %}
+                            <div class="mt-2 text-sm text-red-600">
+                                {{ form_errors(form.front) }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-6">
+                        {{ form_label(form.back, null, {
+                            'label_attr': {
+                                'class': 'block mb-2 text-sm font-medium text-gray-900'
+                            }
+                        }) }}
+                        
+                        {{ form_widget(form.back) }}
+                        
+                        {% if form_errors(form.back) %}
+                            <div class="mt-2 text-sm text-red-600">
+                                {{ form_errors(form.back) }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="flex justify-end space-x-3">
+                        <a href="{{ path('ai_flashcards_generate') }}"
+                           class="px-5 py-2.5 text-sm font-medium text-gray-900 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-200">
+                            Anuluj
+                        </a>
+                        <button type="submit"
+                                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5">
+                            Zapisz zmiany
+                        </button>
+                    </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %} 
