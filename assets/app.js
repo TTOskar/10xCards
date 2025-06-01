@@ -1,4 +1,4 @@
-import './bootstrap';
+import './bootstrap.js';
 /*
  * Welcome to your app's main JavaScript file!
  *
@@ -8,6 +8,5 @@ import './bootstrap';
 import './styles/app.css';
 
 // start the Stimulus application
-import './bootstrap';
 
 console.log('This log comes from assets/app.js - welcome to AssetMapper! 🎉');

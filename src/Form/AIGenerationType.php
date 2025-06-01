@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use App\DTO\AIGenerationRequestDTO;
+use App\DTO\Request\AI\GenerateFlashcardsRequest;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -41,7 +41,7 @@ class AIGenerationType extends AbstractType
             ->add('submit', SubmitType::class, [
                 'label' => 'Generate Flashcards',
                 'attr' => [
-                    'class' => 'text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800',
+                    'class' => 'text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-700 focus:outline-none dark:focus:ring-blue-800',
                 ],
             ])
         ;
@@ -50,7 +50,7 @@ class AIGenerationType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => AIGenerationRequestDTO::class,
+            'data_class' => GenerateFlashcardsRequest::class,
             'csrf_protection' => true,
             'csrf_field_name' => '_token',
             'csrf_token_id' => 'ai_generation',

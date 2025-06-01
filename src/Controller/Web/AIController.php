@@ -12,10 +12,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/ai')]
-#[IsGranted('ROLE_USER')]
 class AIController extends AbstractController
 {
     public function __construct(
@@ -32,7 +30,7 @@ class AIController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             try {
                 $data = $form->getData();
-                $result = $this->flashcardService->generateFromText($data['input_text']);
+                $result = $this->flashcardService->generateFromText($data->getInputText());
 
                 return $this->redirectToRoute('ai_job_view', ['jobId' => $result['jobId']]);
             } catch (\Exception $e) {

@@ -10,7 +10,9 @@ use App\Repository\AI\AiJobFlashcardRepository;
 use App\Repository\AI\AiJobRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 class AIFlashcardGeneratorService
 {
@@ -21,8 +23,9 @@ class AIFlashcardGeneratorService
         private readonly UserLimitsService $limitsService,
         private readonly AiJobFlashcardRepository $flashcardRepository,
         private readonly AiJobRepository $jobRepository,
-        private readonly string $aiApiEndpoint,
-        private readonly string $aiApiKey
+        private readonly RouterInterface $router,
+        #[Autowire('%app.ai.endpoint%')] private readonly string $aiApiEndpoint,
+        #[Autowire('%app.ai.api_key%')] private readonly string $aiApiKey
     ) {
     }
 

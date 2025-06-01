@@ -12,11 +12,14 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 final class AiGenerateController extends AbstractController
 {
     public function __construct(
-        private readonly AiFlashcardsGeneratorInterface $flashcardsGenerator
+        private readonly AiFlashcardsGeneratorInterface $flashcardsGenerator,
+        #[Autowire('%app.ai.api_key%')] private readonly string $apiKey
     ) {
     }
 
@@ -71,8 +74,24 @@ final class AiGenerateController extends AbstractController
     public function __invoke(
         #[MapRequestPayload] GenerateFlashcardsRequest $request
     ): JsonResponse {
+        // Check if the request is internal
+        if (!$this->isValidApiRequest()) {
+            throw new UnauthorizedHttpException('Bearer', 'Invalid or missing API key');
+        }
+
         $response = $this->flashcardsGenerator->generate($request);
 
         return $this->json($response);
+    }
+
+    private function isValidApiRequest(): bool
+    {
+        $authHeader = $this->container->get('request_stack')->getCurrentRequest()->headers->get('Authorization');
+        if (!$authHeader) {
+            return false;
+        }
+
+        $token = str_replace('Bearer ', '', $authHeader);
+        return hash_equals($this->apiKey, $token);
     }
 } 

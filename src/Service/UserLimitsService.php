@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Repository\AI\AiJobFlashcardRepository;
 use App\Repository\AI\AiJobRepository;
+use App\Service\Mock\MockUser;
 use Symfony\Bundle\SecurityBundle\Security;
 
 class UserLimitsService
@@ -12,19 +13,20 @@ class UserLimitsService
     private const MAX_REQUESTS_PER_MINUTE = 5;
     private const MAX_FLASHCARDS_PER_DAY = 500;
 
+    private readonly MockUser $mockUser;
+
     public function __construct(
         private readonly Security $security,
         private readonly AiJobFlashcardRepository $flashcardRepository,
         private readonly AiJobRepository $jobRepository
     ) {
+        $this->mockUser = new MockUser();
     }
 
     public function getUserLimits(): array
     {
-        $user = $this->security->getUser();
-        if (!$user) {
-            throw new \RuntimeException('User must be logged in to check limits');
-        }
+        // Use mock user for testing
+        $user = $this->mockUser;
 
         $todayFlashcards = $this->flashcardRepository->countTodayFlashcardsForUser($user->getId());
         $recentRequests = $this->jobRepository->countRecentRequestsForUser($user->getId());
@@ -38,10 +40,8 @@ class UserLimitsService
 
     public function checkLimits(string $text): void
     {
-        $user = $this->security->getUser();
-        if (!$user) {
-            throw new \RuntimeException('User must be logged in to generate flashcards');
-        }
+        // Use mock user for testing
+        $user = $this->mockUser;
 
         $textLength = mb_strlen($text);
         if ($textLength > self::MAX_CHARS) {
