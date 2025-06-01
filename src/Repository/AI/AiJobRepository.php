@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repository\AI;
 
 use App\Entity\AI\AiJob;
+use App\Enum\AI\JobStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -30,10 +31,41 @@ class AiJobRepository extends ServiceEntityRepository
         $em->flush();
     }
 
+    public function countRecentRequestsForUser(int $userId): int
+    {
+        $oneMinuteAgo = new \DateTime('-1 minute');
+        
+        return $this->createQueryBuilder('j')
+            ->select('COUNT(j.id)')
+            ->where('j.userId = :userId')
+            ->andWhere('j.createdAt >= :oneMinuteAgo')
+            ->setParameter('userId', $userId)
+            ->setParameter('oneMinuteAgo', $oneMinuteAgo)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
+     * @return array<array{
+     *    status: string,
+     *    count: int
+     * }>
+     */
+    public function getJobStatistics(int $userId): array
+    {
+        return $this->createQueryBuilder('j')
+            ->select('j.status as status, COUNT(j.id) as count')
+            ->where('j.userId = :userId')
+            ->setParameter('userId', $userId)
+            ->groupBy('j.status')
+            ->getQuery()
+            ->getResult();
+    }
+
     /**
      * @return AiJob[]
      */
-    public function findLatestByUserId(string $userId, int $limit = 10): array
+    public function findRecentByUser(int $userId, int $limit = 10): array
     {
         return $this->createQueryBuilder('j')
             ->where('j.userId = :userId')
@@ -44,23 +76,14 @@ class AiJobRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    /**
-     * Returns statistics for AI jobs grouped by status
-     * 
-     * @return array<array{
-     *    status: string,
-     *    count: int,
-     *    avgDuration: float
-     * }>
-     */
-    public function getJobStatistics(string $userId): array
+    public function findLatestByUser(int $userId): ?AiJob
     {
         return $this->createQueryBuilder('j')
-            ->select('j.status as status, COUNT(j.id) as count, AVG(j.durationMs) as avgDuration')
             ->where('j.userId = :userId')
             ->setParameter('userId', $userId)
-            ->groupBy('j.status')
+            ->orderBy('j.createdAt', 'DESC')
+            ->setMaxResults(1)
             ->getQuery()
-            ->getResult();
+            ->getOneOrNullResult();
     }
 } 

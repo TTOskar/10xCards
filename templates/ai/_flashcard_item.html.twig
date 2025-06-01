@@ -1,0 +1,48 @@
+{# Flashcard item template #}
+<div class="flashcard-item bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700" data-flashcard-id="{{ flashcard.id }}">
+    <div class="p-4">
+        {# Checkbox for bulk actions #}
+        <div class="flex items-center mb-4">
+            <input type="checkbox" id="select-flashcard-{{ flashcard.id }}" class="flashcard-select w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" data-flashcard-id="{{ flashcard.id }}">
+            <label for="select-flashcard-{{ flashcard.id }}" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Select for bulk action</label>
+        </div>
+
+        {# Flashcard content #}
+        <div class="mb-4">
+            <div class="mb-3">
+                <label class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Front</label>
+                <div class="p-2 bg-gray-50 border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600">
+                    {{ flashcard.front }}
+                </div>
+            </div>
+            <div>
+                <label class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Back</label>
+                <div class="p-2 bg-gray-50 border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600">
+                    {{ flashcard.back }}
+                </div>
+            </div>
+        </div>
+
+        {# Action buttons #}
+        <div class="flex items-center justify-end space-x-2">
+            <button type="button" class="flashcard-accept text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-green-800" data-action="accept" data-flashcard-id="{{ flashcard.id }}">
+                <svg class="w-4 h-4 me-1 inline-block" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 11.917 9.724 16.64 19.5 6.864"/>
+                </svg>
+                Accept
+            </button>
+            <button type="button" class="flashcard-edit text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-4 py-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700" data-action="edit" data-flashcard-id="{{ flashcard.id }}" data-modal-target="edit-flashcard-modal">
+                <svg class="w-4 h-4 me-1 inline-block" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.3 4.8 2.9 2.9M7 7H4a1 1 0 0 0-1 1v10c0 .6.4 1 1 1h11c.6 0 1-.4 1-1v-4.5m2.4-10a2 2 0 0 1 0 3l-6.8 6.8L8 14l.7-3.6 6.9-6.8a2 2 0 0 1 2.8 0Z"/>
+                </svg>
+                Edit
+            </button>
+            <button type="button" class="flashcard-reject text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-red-600 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-red-800" data-action="reject" data-flashcard-id="{{ flashcard.id }}">
+                <svg class="w-4 h-4 me-1 inline-block" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 18 6m0 12L6 6"/>
+                </svg>
+                Reject
+            </button>
+        </div>
+    </div>
+</div> 

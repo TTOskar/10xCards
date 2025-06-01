@@ -98,4 +98,19 @@ class AiJobFlashcardRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function countTodayFlashcardsForUser(int $userId): int
+    {
+        $today = new \DateTime('today');
+        
+        return $this->createQueryBuilder('f')
+            ->select('COUNT(f.id)')
+            ->join('f.aiJob', 'j')
+            ->where('j.userId = :userId')
+            ->andWhere('f.createdAt >= :today')
+            ->setParameter('userId', $userId)
+            ->setParameter('today', $today)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 } 
